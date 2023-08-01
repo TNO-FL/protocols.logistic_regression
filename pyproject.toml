@@ -1,0 +1,52 @@
+[build-system]
+requires = ["setuptools", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tno.fl.protocols.logistic_regression"
+description = "Generic utilities for implementing encryption schemes"
+readme = "README.md"
+authors = [{ name = "TNO PET Lab", email = "petlab@tno.nl" }]
+maintainers = [{ name = "TNO PET Lab", email = "petlab@tno.nl" }]
+keywords = [
+    "TNO",
+    "PET",
+    "machine learning",
+    "federated learning",
+    "logistic regression",
+]
+license = { text = "Apache License, Version 2.0" }
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: Science/Research",
+    "Typing :: Typed",
+]
+urls = { Homepage = "https://pet.tno.nl/", Documentation = "https://docs.pet.tno.nl/fl/protocols/logistic_regression/0.2.2", Source = "https://github.com/TNO-FL/protocols.logistic_regression" }
+dynamic = ["version"]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "pandas",
+    "tno.mpc.communication~=4.8",
+]
+
+[project.optional-dependencies]
+tests = [
+    "numpy",
+    "pandas-stubs",
+    "pytest",
+    "pytest-asyncio",
+]
+
+[tool.setuptools]
+platforms = ["any"]
+
+[tool.setuptools.dynamic]
+version = { attr = "tno.fl.protocols.logistic_regression.__version__" }
+
+[tool.setuptools.package-data]
+"*" = ["py.typed"]
