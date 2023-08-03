@@ -30,7 +30,7 @@ own risk._
 
 ## Documentation
 
-Documentation of the tno.mpc.communication package can be found
+Documentation of the tno.fl.protocols.logistic_regression package can be found
 [here](https://docs.pet.tno.nl/fl/protocols/logistic_regression/0.2.2).
 
 ## Install
