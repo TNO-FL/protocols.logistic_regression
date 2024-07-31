@@ -1,14 +1,5 @@
 # TNO PET Lab - Federated Learning (FL) - Protocols - Logistic Regression
 
-The TNO PET Lab consists of generic software components, procedures, and
-functionalities developed and maintained on a regular basis to facilitate and
-aid in the development of PET solutions. The lab is a cross-project initiative
-allowing us to integrate and reuse previously developed PET functionalities to
-boost the development of new protocols and solutions.
-
-The package `tno.fl.protocols.logistic_regression` is part of the TNO Python
-Toolbox.
-
 Implementation of a Federated Learning scheme for Logistic Regression. This
 library was designed to facilitate both developers that are new to cryptography
 and developers that are more familiar with cryptography.
@@ -20,25 +11,38 @@ Supports:
 - Binary classification (multi-class not yet supported)
 - Both fixed learning rate or second-order methods (Hessian)
 
-This software implementation was financed via EUREKA ITEA labeling under Project
-reference number 20050.
+The TNO PET Lab consists of generic software components, procedures, and
+functionalities developed and maintained on a regular basis to facilitate and
+aid in the development of PET solutions. The lab is a cross-project initiative
+allowing us to integrate and reuse previously developed PET functionalities to
+boost the development of new protocols and solutions.
+
+The package `tno.fl.protocols.logistic_regression` is part of the
+[TNO Python Toolbox](https://github.com/TNO-PET).
 
 _Limitations in (end-)use: the content of this software package may solely be
-used for applications that comply with international export control laws.  
-This implementation of cryptographic software has not been audited. Use at your
+used for applications that comply with international export control laws._  
+_This implementation of cryptographic software has not been audited. Use at your
 own risk._
 
 ## Documentation
 
-Documentation of the tno.fl.protocols.logistic_regression package can be found
-[here](https://docs.pet.tno.nl/fl/protocols/logistic_regression/0.2.2).
+Documentation of the `tno.fl.protocols.logistic_regression` package can be found
+[here](https://docs.pet.tno.nl/fl/protocols/logistic_regression/1.0.1).
 
 ## Install
 
-Easily install the tno.fl.protocols.logistic_regression package using pip:
+Easily install the `tno.fl.protocols.logistic_regression` package using `pip`:
 
 ```console
 $ python -m pip install tno.fl.protocols.logistic_regression
+```
+
+_Note:_ If you are cloning the repository and wish to edit the source code, be
+sure to install the package in editable mode:
+
+```console
+$ python -m pip install -e 'tno.fl.protocols.logistic_regression'
 ```
 
 If you wish to run the tests you can use:
@@ -52,7 +56,8 @@ $ python -m pip install 'tno.fl.protocols.logistic_regression[tests]'
 This package uses federated learning for training a logistic regression model on
 datasets that are distributed amongst several clients. Below is first a short
 overview of federated learning in general and how this has been implemented in
-this package. In the next section, a minimal working example is provided.
+this package. In the next section, a minimal working example is provided. This
+code is also available in the repository in the `examples` folder.
 
 ### Federated Learning
 
@@ -81,43 +86,48 @@ method).
 The implementation of federated logistic regression consist of two classes with
 the suggestive names `Client` and `Server`. Each client is an instance of
 `Client` and the server is an instance of the `Server` class. These classes are
-passed a configuration object and a name (unique identifier for the client).
-Calling the `.run()` method on the objects, will perform the federated learning
-and returns the resulting logistic regression model (numpy array).
-
-All settings are defined in a configuration file. This file is a `.ini` file and
-a template is given in the `config.ini` (in the repository). An example is also
-shown below in the minimal example. Here is an overview of what must be in the
-configuration.
-
-The files contains a Parties section in which the names of all clients and the
-name of the server are listed. Next we have a separate section for each client
-and server, containing the IP-address and port on which it can be reached. The
-clients also have a link to the location of the `.csv`-file containing the
-data.  
-The 'Experiment' section contains the experiment configuration. Most of the
-fields are self-explanatory:
-
-- **data_columns**: the columns in the csv which should be used for training.
-- **target_column**: the target column in the csv (which should be predicted).
-- **intercept**: whether an intercept column should be added.
-- **n_epochs**: maximum number of epochs
-- **learning_rate**: the learning rate (float) or 'hessian'. If this value is
-  'hessian', a second-order derivative is used as learning rate (Newton's
-  method).
-
-_Note: At this moment, only csv-files are supported as input. Users can use
-other file types or databases by overriding the `load_data()` method on the
-clients._
+passed the required parameters and a communication pool. Calling the `.run`
+method with the data will perform the federated learning and returns the
+resulting logistic regression model (as a numpy array).
 
 #### Communication
 
-This package relies on the `tno.mpc.communication` package, which is also part
-of the PET lab. It is used for the communication amongst the server and the
-clients. Since this package uses `asyncio` for asynchronous handling, this
+The client and the servers must be given a communication pool during
+initialization. This is a `Pool` object from the `tno.mpc.communication`
+package, which is also part of the PET lab. It is used for the communication
+amongst the server and the clients. We refer to this package for more
+information about this. The example file also gives an example of how to set up
+a simple communication pool.
+
+Since the communication package uses `asyncio` for asynchronous handling, this
 federated learning package depends on it as well. For more information about
 this, we refer to the
 [tno.mpc.communication documentation](https://docs.pet.tno.nl/mpc/communication/)
+
+#### Passing the data
+
+Once the client and the server have been properly initialized, the federated
+learning can be performed using the `.run()` function. This function has two
+arguments. The first is a numpy array containing the covariates / training data.
+The second is another numpy array of booleans containing the target data. So the
+first one contains the sample data and the second contains the category the
+sample belongs to. Currently, only binary classification is supported.
+
+#### Other customization
+
+All settings are passed as parameters to the client and the server. This
+includes:
+
+- **fit_intercept:** Should an intercept column be added to the data as first
+  column. Default: False
+- **max_iter:** The maximum number of iterations in the learning process.
+  Default: 25.
+- **server_name:** The name of the server handler in the pool object. Default:
+  'server'.
+
+In addition, there are many possibilities for overriding client/server
+functions, such as a preprocessing function, computing the client weights, or
+the initial model.
 
 ### Example code
 
@@ -155,62 +165,64 @@ sepal_length,sepal_width,petal_length,petal_width,is_setosa
 6.1,2.9,4.7,1.4,0
 ```
 
-Next, we create a configuration file for this experiment.
-
-`iris.ini`
-
-```text
-[Experiment]
-data_columns=sepal_length,sepal_width,petal_length,petal_width
-target_column=is_setosa
-intercept=True
-n_epochs=10
-learning_rate=hessian
-
-[Parties]
-clients=Alice,Bob
-server=Server
-
-[Server]
-address=localhost
-port=8000
-
-[Alice]
-address=localhost
-port=8001
-train_data=data_alice.csv
-
-[Bob]
-address=localhost
-port=8002
-train_data=data_bob.csv
-```
-
-Finally, we create the code to run the federated learning algorithm:
+We create the following code to run the federated learning algorithm:
 
 `main.py`
 
 ```python
+"""
+This module runs the logistic regression protocol on an example data set.
+By running the script three times with command line argument 'server', 'alice'
+and 'bob' respectively, you can get a demonstration of how it works.
+"""
+
 import asyncio
 import sys
-from pathlib import Path
+
+import pandas as pd
+
+from tno.mpc.communication import Pool
 
 from tno.fl.protocols.logistic_regression.client import Client
-from tno.fl.protocols.logistic_regression.config import Config
 from tno.fl.protocols.logistic_regression.server import Server
 
 
+async def run_client(name: str, port: int) -> None:
+    # Create Pool
+    pool = Pool()
+    pool.add_http_server(addr="localhost", port=port)
+    pool.add_http_client(name="server", addr="localhost", port=8080)
+    # Get Data
+    csv_data = pd.read_csv("data_" + name + ".csv")
+    data = csv_data[
+        ["sepal_length", "sepal_width", "petal_length", "petal_width"]
+    ].to_numpy()
+    target = csv_data["is_setosa"].to_numpy()
+    # Create Client
+    client = Client(pool, fit_intercept=True, max_iter=10)
+    print(await client.run(data, target))
+
+
+async def run_server() -> None:
+    # Create Pool
+    pool = Pool()
+    pool.add_http_server(addr="localhost", port=8080)
+    pool.add_http_client(name="alice", addr="localhost", port=8081)
+    pool.add_http_client(name="bob", addr="localhost", port=8082)
+    # Create Client
+    server = Server(pool, max_iter=10)
+    await server.run()
+
+
 async def async_main() -> None:
-    config = Config.from_file(Path("iris.ini"))
+    if len(sys.argv) < 2:
+        raise ValueError("Player name must be provided.")
     if sys.argv[1].lower() == "server":
-        server = Server(config)
-        print(await server.run())
+        await run_server()
     elif sys.argv[1].lower() == "alice":
-        client = Client(config, "Alice")
-        print(await client.run())
+        await run_client("alice", 8081)
     elif sys.argv[1].lower() == "bob":
-        client = Client(config, "Bob")
-        print(await client.run())
+        await run_client("bob", 8082)
     else:
         raise ValueError(
             "This player has not been implemented. Possible values are: server, alice, bob"
@@ -231,7 +243,7 @@ client is started prior to the server, it will throw a ClientConnectorError.
 Namely, the client tries to send a message to port the server, which has not
 been opened yet. After starting the server, the error disappears.
 
-```console
+```commandline
 python main.py alice
 python main.py bob
 python main.py server
@@ -239,20 +251,21 @@ python main.py server
 
 The output for the clients will be something similar to:
 
-```console
+```commandline
 >>> python main.py alice
-2023-07-31 14:21:21,765 - tno.mpc.communication.httphandlers - INFO - Serving on localhost:8001
-2023-07-31 14:21:21,780 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,796 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,811 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,833 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,833 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,851 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,867 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,882 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,898 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-2023-07-31 14:21:21,914 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8000
-[[-2.907941249994596], [-0.1876483927585601], [7.728309577725918], [-6.938238886471739], [0.5467650097181181]]
+2024-01-18 16:01:56,735 - tno.mpc.communication.httphandlers - INFO - Serving on localhost:8081
+2024-01-18 16:01:58,655 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,655 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,671 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,693 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,709 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,709 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,724 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,740 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,756 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,771 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+2024-01-18 16:01:58,793 - tno.mpc.communication.httphandlers - INFO - Received message from 127.0.0.1:8080
+[[-7.63901840925708], [2.985418690990691], [4.688929649931743], [-6.397069834606601], [-6.008454039386442]]
 ```
 
 We first see the client setting up the connection with the server. Then we have
@@ -260,10 +273,10 @@ ten rounds of training, as indicated in the configuration file. Finally, we
 print the resulting model. We obtain the following coefficients for classifying
 setosa irises:
 
-| Parameter    | Coefficient         |
-| ------------ | ------------------- |
-| intercept    | -2.907941249994596  |
-| sepal_length | -0.1876483927585601 |
-| sepal_width  | 7.728309577725918   |
-| petal_length | -6.938238886471739  |
-| petal_width  | 0.5467650097181181  |
+| Parameter    | Coefficient        |
+| ------------ | ------------------ |
+| intercept    | -7.63901840925708  |
+| sepal_length | 2.985418690990691  |
+| sepal_width  | 4.688929649931743  |
+| petal_length | -6.397069834606601 |
+| petal_width  | -6.008454039386442 |
