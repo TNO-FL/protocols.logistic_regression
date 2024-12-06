@@ -5,7 +5,6 @@ Logistic regression client
 from __future__ import annotations
 
 import logging
-from typing import Tuple
 
 import numpy as np
 import numpy.typing as npt
@@ -29,7 +28,7 @@ TargetType = npt.NDArray[np.bool_]
 ModelType = npt.NDArray[np.float64]
 GradientType = npt.NDArray[np.float64]
 HessianType = npt.NDArray[np.float64]
-UpdateType = Tuple[GradientType, HessianType]
+UpdateType = tuple[GradientType, HessianType]
 
 
 class Client:

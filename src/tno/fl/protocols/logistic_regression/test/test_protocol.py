@@ -12,7 +12,7 @@ import pytest
 
 from tno.mpc.communication import Pool
 
-from tno.fl.protocols.logistic_regression.client import Client
+from tno.fl.protocols.logistic_regression.client import Client, ModelType
 from tno.fl.protocols.logistic_regression.server import Server
 
 
@@ -41,7 +41,7 @@ async def test_protocol(http_pool_trio: tuple[Pool, Pool, Pool]) -> None:
     client1 = Client(http_pool_trio[1], max_iter=10, server_name="local0")
     client2 = Client(http_pool_trio[2], max_iter=10, server_name="local0")
 
-    models = await asyncio.gather(
+    models: list[ModelType | None] = await asyncio.gather(
         *[
             server.run(),
             client1.run(data_alice, target_alice),
@@ -50,6 +50,8 @@ async def test_protocol(http_pool_trio: tuple[Pool, Pool, Pool]) -> None:
     )
 
     # Tests
+    assert models[1] is not None
+    assert models[2] is not None
     assert np.array_equal(models[1], models[2])
     assert np.isclose(
         models[1],

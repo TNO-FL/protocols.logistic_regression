@@ -4,7 +4,7 @@ Server module for logistic regression
 
 from __future__ import annotations
 
-from typing import Tuple, cast
+from typing import cast
 
 import numpy as np
 import numpy.typing as npt
@@ -23,7 +23,7 @@ from tno.fl.protocols.logistic_regression.msg_ids import (
 ModelType = npt.NDArray[np.float64]
 GradientType = npt.NDArray[np.float64]
 HessianType = npt.NDArray[np.float64]
-UpdateType = Tuple[GradientType, HessianType]
+UpdateType = tuple[GradientType, HessianType]
 
 
 class Server:

@@ -11,24 +11,19 @@ Supports:
 - Binary classification (multi-class not yet supported)
 - Both fixed learning rate or second-order methods (Hessian)
 
-The TNO PET Lab consists of generic software components, procedures, and
-functionalities developed and maintained on a regular basis to facilitate and
-aid in the development of PET solutions. The lab is a cross-project initiative
-allowing us to integrate and reuse previously developed PET functionalities to
-boost the development of new protocols and solutions.
+### PET Lab
 
-The package `tno.fl.protocols.logistic_regression` is part of the
-[TNO Python Toolbox](https://github.com/TNO-PET).
+The TNO PET Lab consists of generic software components, procedures, and functionalities developed and maintained on a regular basis to facilitate and aid in the development of PET solutions. The lab is a cross-project initiative allowing us to integrate and reuse previously developed PET functionalities to boost the development of new protocols and solutions.
 
-_Limitations in (end-)use: the content of this software package may solely be
-used for applications that comply with international export control laws._  
-_This implementation of cryptographic software has not been audited. Use at your
-own risk._
+The package `tno.fl.protocols.logistic_regression` is part of the [TNO Python Toolbox](https://github.com/TNO-PET).
+
+_Limitations in (end-)use: the content of this software package may solely be used for applications that comply with international export control laws._  
+_This implementation of cryptographic software has not been audited. Use at your own risk._
 
 ## Documentation
 
 Documentation of the `tno.fl.protocols.logistic_regression` package can be found
-[here](https://docs.pet.tno.nl/fl/protocols/logistic_regression/1.0.1).
+[here](https://docs.pet.tno.nl/fl/protocols/logistic_regression/1.1.0).
 
 ## Install
 
@@ -86,18 +81,17 @@ method).
 The implementation of federated logistic regression consist of two classes with
 the suggestive names `Client` and `Server`. Each client is an instance of
 `Client` and the server is an instance of the `Server` class. These classes are
-passed the required parameters and a communication pool. Calling the `.run`
-method with the data will perform the federated learning and returns the
-resulting logistic regression model (as a numpy array).
+passed the required parameters and a communication pool.
+Calling the `.run` method with the data will perform the federated learning
+and returns the resulting logistic regression model (as a numpy array).
 
 #### Communication
 
-The client and the servers must be given a communication pool during
-initialization. This is a `Pool` object from the `tno.mpc.communication`
-package, which is also part of the PET lab. It is used for the communication
-amongst the server and the clients. We refer to this package for more
-information about this. The example file also gives an example of how to set up
-a simple communication pool.
+The client and the servers must be given a communication pool during initialization.
+This is a `Pool` object from the `tno.mpc.communication` package, which is also part
+of the PET lab. It is used for the communication amongst the server and the
+clients. We refer to this package for more information about this.
+The example file also gives an example of how to set up a simple communication pool.
 
 Since the communication package uses `asyncio` for asynchronous handling, this
 federated learning package depends on it as well. For more information about
@@ -106,28 +100,25 @@ this, we refer to the
 
 #### Passing the data
 
-Once the client and the server have been properly initialized, the federated
-learning can be performed using the `.run()` function. This function has two
-arguments. The first is a numpy array containing the covariates / training data.
-The second is another numpy array of booleans containing the target data. So the
-first one contains the sample data and the second contains the category the
-sample belongs to. Currently, only binary classification is supported.
+Once the client and the server have been properly initialized,
+the federated learning can be performed using the `.run()` function.
+This function has two arguments.
+The first is a numpy array containing the covariates / training data.
+The second is another numpy array of booleans containing the target data.
+So the first one contains the sample data and the second contains the category the sample belongs to.
+Currently, only binary classification is supported.
 
 #### Other customization
 
-All settings are passed as parameters to the client and the server. This
-includes:
+All settings are passed as parameters to the client and the server.
+This includes:
 
-- **fit_intercept:** Should an intercept column be added to the data as first
-  column. Default: False
-- **max_iter:** The maximum number of iterations in the learning process.
-  Default: 25.
-- **server_name:** The name of the server handler in the pool object. Default:
-  'server'.
+- **fit_intercept:** Should an intercept column be added to the data as first column. Default: False
+- **max_iter:** The maximum number of iterations in the learning process. Default: 25.
+- **server_name:** The name of the server handler in the pool object. Default: 'server'.
 
-In addition, there are many possibilities for overriding client/server
-functions, such as a preprocessing function, computing the client weights, or
-the initial model.
+In addition, there are many possibilities for overriding client/server functions,
+such as a preprocessing function, computing the client weights, or the initial model.
 
 ### Example code
 

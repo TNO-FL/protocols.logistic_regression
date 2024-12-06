@@ -44,7 +44,7 @@ async def test_statistics(http_pool_trio: tuple[Pool, Pool, Pool]) -> None:
     client1 = Client(http_pool_trio[1], max_iter=10, server_name="local0")
     client2 = Client(http_pool_trio[2], max_iter=10, server_name="local0")
 
-    statistics = await asyncio.gather(
+    statistics: list[list[dict[str, float]] | None] = await asyncio.gather(
         *[
             server.compute_statistics(),
             client1.compute_statistics(data_alice, target_alice, model),
@@ -53,6 +53,8 @@ async def test_statistics(http_pool_trio: tuple[Pool, Pool, Pool]) -> None:
     )
 
     # Parse results
+    assert statistics[1] is not None
+    assert statistics[2] is not None
     standard_errors = [stat["se"] for stat in statistics[1]]
     z_values = [stat["z"] for stat in statistics[1]]
     p_values = [stat["p"] for stat in statistics[1]]
